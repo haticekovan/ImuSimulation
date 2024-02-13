@@ -3,13 +3,14 @@
 #include "QMC6310_Unified.h"
 #include <SensorFusion.h>
 
-#define OFFSET_CALCULATION_TIME 3000 // Offset hesaplama süresi (ms)
+#define OFFSET_CALCULATION_TIME 3000 // offset calculation time (ms)
 
 QMC6310_Unified mag_sensor = QMC6310_Unified(12345, false);
 
 SF fusion;
 LSM6DS3 imu = LSM6DS3(I2C_MODE, 0x6A);
 
+//Calibrate it so that it takes the place it was at when it first started as a starting point
 void IMU::calibrate() {
     int samples;
     int start = millis();
@@ -34,7 +35,7 @@ void IMU::calibrate() {
     accelZoffset = (accelZoffset/samples) - 1;  
 }
 
-
+//Set imu initial values
 void IMU::settings()
 {
   imu.settings.gyroEnabled = 1;  //Can be 0 or 1
@@ -66,7 +67,7 @@ void IMU:: mag()
 
 void IMU:: readData()
 {
-    // Sensörlerden veri okuma işlemi
+    // Reading data from sensors
     float ax = imu.readFloatAccelX() - accelXoffset;
     float ay = imu.readFloatAccelY() - accelYoffset;
     float az = imu.readFloatAccelZ() - accelZoffset;
@@ -79,9 +80,9 @@ void IMU:: readData()
     sensors_event_t event; 
     
     mag_sensor.getEvent(&event);
-    // Yaw, pitch, roll değerlerini hesapla
+    // Calculate yaw, pitch, roll values
     float  deltat;
-    extern IMU mu;
+    extern IMU mu;         // used to define the object once. If you want to more information https://stackoverflow.com/questions/10422034/when-to-use-extern-in-c
 
     deltat = fusion.deltatUpdate(); 
     fusion.MahonyUpdate(gx, gy, gz, ax, ay, az, event.magnetic.x, event.magnetic.y, event.magnetic.z, deltat);  
