@@ -1,4 +1,4 @@
-// oled de top hareket ettirme
+// Moving the ball in oled
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
@@ -12,8 +12,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 int centerX = SCREEN_WIDTH / 2;
 int centerY = SCREEN_HEIGHT / 2;
-int speed = 2;
-int radius = 10; // Topun yarıçapı
+int speed = 1.5;
+int radius = 7; // Radius of the ball
 int direction = -1;
 
 IMU mu;
@@ -44,29 +44,23 @@ void setup() {
 
   delay(2000);
   display.clearDisplay();
-
-  // Topu ekranın ortasına yerleştir
-  centerX = SCREEN_WIDTH / 2;
-  centerY = SCREEN_HEIGHT / 2;
-
-  display.fillCircle(centerX, centerY, radius, SSD1306_WHITE);
 }
 
 void loop() {
-    // Sensörlerden veri okuma işlemi
+    // Read data from sensors
     mu.readData();
 
     centerX += mu.roll * speed;
     centerY += mu.pitch * speed;
 
     if (centerX  >= SCREEN_WIDTH ) {
-        centerX  =SCREEN_WIDTH; // Yönü tersine çevir
+        centerX  =SCREEN_WIDTH; 
     }
     if (centerX  < 0){
         centerX =0;
     }
     if (centerY >= SCREEN_HEIGHT ) {
-        centerY = SCREEN_HEIGHT; // Yönü tersine çevir
+        centerY = SCREEN_HEIGHT; 
     }
     if(centerY  <0){
         centerY =0;
@@ -74,10 +68,10 @@ void loop() {
 
     display.clearDisplay();
     
-    display.fillCircle(centerX, centerY, radius, SSD1306_WHITE);
+    display.fillCircle(centerX, centerY, radius, SSD1306_WHITE); // draw ball
     display.display();
     
-    // Yaw, pitch, roll değerlerini yazdır
+    // Print yaw, pitch, roll values
     Serial.print("Yaw: "); Serial.println(mu.yaw);
     Serial.print("Roll: "); Serial.println(mu.roll);
     Serial.print("Pitch: "); Serial.println(mu.pitch);
