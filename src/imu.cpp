@@ -65,9 +65,9 @@ void IMU:: mag()
   mag_sensor.begin();
 }
 
+// Reading data from sensors
 void IMU:: readData()
 {
-    // Reading data from sensors
     float ax = imu.readFloatAccelX() - accelXoffset;
     float ay = imu.readFloatAccelY() - accelYoffset;
     float az = imu.readFloatAccelZ() - accelZoffset;
